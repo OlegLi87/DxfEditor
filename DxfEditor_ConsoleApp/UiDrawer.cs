@@ -55,7 +55,7 @@ internal class UiDrawer
         }
 
         string howMany = diametersChangedCount == 1 ? "diameter was" : "diameters were";
-        drawSuccessMessage($"{diametersChangedCount} {howMany} changed.");
+        drawMessage($"{diametersChangedCount} {howMany} changed.", ConsoleMessage.Success);
     }
 
     private void drawDeleteDuplicatesOption()
@@ -66,10 +66,10 @@ internal class UiDrawer
         (int deletedSplines, int deletedDuplicates) = DxfEditor.DeleteSplinesAndDuplicates(paths[0], paths[1], range);
 
         string howMany = deletedSplines == 1 ? "spline was" : "splines were";
-        drawSuccessMessage($"{deletedSplines} {howMany} deleted.");
+        drawMessage($"{deletedSplines} {howMany} deleted.", ConsoleMessage.Success);
 
         howMany = deletedDuplicates == 1 ? "duplicate was" : "duplicates were";
-        drawSuccessMessage($"{deletedDuplicates} {howMany} deleted.");
+        drawMessage($"{deletedDuplicates} {howMany} deleted.", ConsoleMessage.Success);
     }
 
     private char askForOptionInput<T>(IEnumerable<T> options)
@@ -86,7 +86,7 @@ internal class UiDrawer
 
             if (InputCollectorAndValidator.TryGetSelectedOptionInput
                      (Enumerable.Range(1, options.Count()), out selectedOption)) toStopAskForInput = true;
-            else drawErrorMessage("Invalid option selected!Try once again.");
+            else drawMessage("Invalid option selected!Try once again.", ConsoleMessage.Error);
         }
 
         Console.WriteLine();
@@ -102,7 +102,7 @@ internal class UiDrawer
         {
             Console.WriteLine(message);
             if (InputCollectorAndValidator.TryGetTextualInput(out input, true)) toStopAskForInput = true;
-            else drawErrorMessage("Invalid input!Must not be empty and begin with \"C:\\\"");
+            else drawMessage("Invalid input!Must not be empty and begin with \"C:\\\"", ConsoleMessage.Error);
         }
 
         return input;
@@ -117,7 +117,7 @@ internal class UiDrawer
         {
             Console.WriteLine(message);
             if (InputCollectorAndValidator.TryGetNumericalInput(out input)) toStopAskForInput = true;
-            else drawErrorMessage("Invalid input!Try once again.");
+            else drawMessage("Invalid input!Try once again.", ConsoleMessage.Error);
         }
 
         return input;
@@ -134,23 +134,21 @@ internal class UiDrawer
         return paths;
     }
 
-    internal void drawErrorMessage(string message)
+    internal void drawMessage(string message, ConsoleMessage type)
     {
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.BackgroundColor = ConsoleColor.DarkRed;
+        if (type == ConsoleMessage.Success)
+        {
+            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        else if (type == ConsoleMessage.Error)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+        }
 
-        Console.WriteLine();
         Console.WriteLine(message);
         Console.WriteLine();
-
-        Console.ResetColor();
-    }
-
-    private void drawSuccessMessage(string message)
-    {
-        Console.BackgroundColor = ConsoleColor.Blue;
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine(message);
 
         Console.ResetColor();
     }

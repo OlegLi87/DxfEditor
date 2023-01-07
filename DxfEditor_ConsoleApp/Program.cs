@@ -8,7 +8,7 @@ try
 }
 catch (Exception ex)
 {
-    uiDrawer.drawErrorMessage(ex.Message);
+    uiDrawer.drawMessage(ex.Message, ConsoleMessage.Error);
 }
 
 Console.ResetColor();
