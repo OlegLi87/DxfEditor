@@ -1,0 +1,12 @@
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\bin\Debug\net6.0\DxfEditor_ClassLib.deps.json
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\bin\Debug\net6.0\DxfEditor_ClassLib.dll
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\bin\Debug\net6.0\DxfEditor_ClassLib.pdb
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.csproj.AssemblyReference.cache
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.AssemblyInfoInputs.cache
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.AssemblyInfo.cs
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.csproj.CoreCompileInputs.cache
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.dll
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\refint\DxfEditor_ClassLib.dll
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\DxfEditor_ClassLib.pdb
+C:\Programming\Final Projects\DxfEditor\DxfEditor_ClassLib\obj\Debug\net6.0\ref\DxfEditor_ClassLib.dll

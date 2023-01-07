@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "tZrqXCbGRGRbzGNhJRgBv+i332wJDweQK3gGL01tTZSst3qJ3UH2I/W1WJOqveZka/PVHo857h14mP3G7z9k1g==",
+  "success": true,
+  "projectFilePath": "C:\\Programming\\Final Projects\\DxfEditor\\DxfEditor_ConsoleApp\\DxfEditor_ConsoleApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hp\\.nuget\\packages\\ixmilia.dxf\\0.8.3\\ixmilia.dxf.0.8.3.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\system.text.encoding.codepages\\5.0.0\\system.text.encoding.codepages.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
