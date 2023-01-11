@@ -16,7 +16,7 @@ internal class UiDrawer
                 drawOffsetDiametersOption();
                 break;
             case '2':
-                drawDeleteDuplicatesOption();
+                drawDeleteDuplicatesOptions();
                 break;
         }
     }
@@ -29,13 +29,14 @@ internal class UiDrawer
         // Asking for user to choose which diameters to offset
         string[] options = { "Offset all diameters", "Choose separately which diameters to offset" };
         char selectedOption = askForOptionInput<string>(options);
+        double offset;
 
         //draw ui based on which option was selected
         int diametersChangedCount;
         if (selectedOption == '1')
         {
-            double offsetValue = askForNumericalInput("__Type diameter offset size__");
-            diametersChangedCount = DxfEditor.OffsetCirlces(paths[0], paths[1], null, true, offsetValue);
+            offset = askForNumericalInput("__Type diameter offset size__", false);
+            diametersChangedCount = DxfEditor.OffsetCirlces(paths[0], paths[1], null, true, offset);
         }
         else
         {
@@ -44,7 +45,7 @@ internal class UiDrawer
             do
             {
                 double diameter = askForNumericalInput("__Type diameter size__");
-                double offset = askForNumericalInput("__Type diameter offset size__");
+                offset = askForNumericalInput("__Type diameter offset size__", false);
                 diameterToOffsetMap.Add(diameter, offset);
 
                 selectedOption = askForOptionInput<string>(new string[] { "Add more diameters", "Stop adding" });
@@ -58,7 +59,7 @@ internal class UiDrawer
         drawMessage($"{diametersChangedCount} {howMany} changed.", ConsoleMessage.Success);
     }
 
-    private void drawDeleteDuplicatesOption()
+    private void drawDeleteDuplicatesOptions()
     {
         string[] paths = askForFilesPaths();
         double range = askForNumericalInput("__Type range value to delete duplicates within__");
@@ -108,7 +109,7 @@ internal class UiDrawer
         return input;
     }
 
-    private double askForNumericalInput(string message)
+    private double askForNumericalInput(string message, bool largerThanZero = true)
     {
         bool toStopAskForInput = false;
         double input = 0;
@@ -116,7 +117,7 @@ internal class UiDrawer
         while (!toStopAskForInput)
         {
             Console.WriteLine(message);
-            if (InputCollectorAndValidator.TryGetNumericalInput(out input)) toStopAskForInput = true;
+            if (InputCollectorAndValidator.TryGetNumericalInput(out input, largerThanZero)) toStopAskForInput = true;
             else drawMessage("Invalid input!Try once again.", ConsoleMessage.Error);
         }
 

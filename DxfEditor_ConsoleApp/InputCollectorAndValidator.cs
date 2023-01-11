@@ -30,11 +30,12 @@ internal static class InputCollectorAndValidator
         return true;
     }
 
-    internal static bool TryGetNumericalInput(out double input)
+    internal static bool TryGetNumericalInput(out double input, bool largerThanZero = true)
     {
         string textualInput;
         input = 0;
 
-        return TryGetTextualInput(out textualInput) && Double.TryParse(textualInput, out input);
+        return TryGetTextualInput(out textualInput) && Double.TryParse(textualInput, out input)
+                  && (!largerThanZero || input > 0);
     }
 }
