@@ -1,18 +1,30 @@
-﻿using DxfEditor_ConsoleApp;
+﻿using System.Diagnostics;
+using DxfEditor_ConsoleApp;
 
-var uiDrawer = new UiDrawer();
+string path = Path.Combine(Environment.CurrentDirectory, @"exceptionLogs.txt");
+using var streamWriter = new StreamWriter(path, true);
 
-try
+Trace.Listeners.Add(new TextWriterTraceListener(streamWriter));
+Trace.AutoFlush = true;
+
+bool toContinue = true;
+while (toContinue)
 {
-    uiDrawer.StartUi();
-}
-catch (Exception ex)
-{
-    uiDrawer.drawMessage(ex.Message, ConsoleMessage.Error);
+    var uiDrawer = new UiDrawer();
+    try
+    {
+        uiDrawer.StartUi();
+    }
+    catch (Exception ex)
+    {
+        uiDrawer.drawMessage(ex.Message, ConsoleMessageStatus.Error);
+        Trace.WriteLine(DateTime.Now.ToString("dd/M/yy H:mm") + " : " + ex.ToString());
+    }
+
+    Console.WriteLine("Press \"y\" to repeat from the main menu.");
+    toContinue = Console.ReadKey().KeyChar == 'y';
 }
 
-Console.ResetColor();
-Console.ReadLine();
 
 
 

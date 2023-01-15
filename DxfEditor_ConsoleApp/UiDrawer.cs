@@ -4,11 +4,15 @@ namespace DxfEditor_ConsoleApp;
 
 internal class UiDrawer
 {
-    public void StartUi() => drawMenu();
+    public void StartUi()
+    {
+        Console.Clear();
+        drawMenu();
+    }
 
     private void drawMenu()
     {
-        char selectedOption = askForOptionInput<MenuOptions>(Enum.GetValues<MenuOptions>());
+        char selectedOption = InputCollectorAndValidator.AskForOptionInput<MenuOptions>(Enum.GetValues<MenuOptions>(), drawMessage);
 
         switch (selectedOption)
         {
@@ -24,19 +28,20 @@ internal class UiDrawer
     private void drawOffsetDiametersOption()
     {
         // Asking from user for original file path and for a new one.
-        string[] paths = askForFilesPaths();
+        string[] paths = InputCollectorAndValidator.AskForFilesPaths(drawMessage);
+        var dxfEditor = new DxfEditor(paths[1], paths[0]);
 
         // Asking for user to choose which diameters to offset
         string[] options = { "Offset all diameters", "Choose separately which diameters to offset" };
-        char selectedOption = askForOptionInput<string>(options);
+        char selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(options, drawMessage);
         double offset;
 
         //draw ui based on which option was selected
         int diametersChangedCount;
         if (selectedOption == '1')
         {
-            offset = askForNumericalInput("__Type diameter offset size__", false);
-            diametersChangedCount = DxfEditor.OffsetCirlces(paths[0], paths[1], null, true, offset);
+            offset = InputCollectorAndValidator.AskForNumericalInput("__Type diameter offset size__", drawMessage, false);
+            diametersChangedCount = dxfEditor.OffsetCirlces(null, true, offset);
         }
         else
         {
@@ -44,105 +49,45 @@ internal class UiDrawer
 
             do
             {
-                double diameter = askForNumericalInput("__Type diameter size__");
-                offset = askForNumericalInput("__Type diameter offset size__", false);
+                double diameter = InputCollectorAndValidator.AskForNumericalInput("__Type diameter size__", drawMessage);
+                offset = InputCollectorAndValidator.AskForNumericalInput("__Type diameter offset size__", drawMessage, false);
                 diameterToOffsetMap.Add(diameter, offset);
 
-                selectedOption = askForOptionInput<string>(new string[] { "Add more diameters", "Stop adding" });
+                selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(new string[] { "Add more diameters", "Stop adding" }, drawMessage);
             }
             while (selectedOption != '2');
 
-            diametersChangedCount = DxfEditor.OffsetCirlces(paths[0], paths[1], diameterToOffsetMap, false);
+            diametersChangedCount = dxfEditor.OffsetCirlces(diameterToOffsetMap, false);
         }
 
         string howMany = diametersChangedCount == 1 ? "diameter was" : "diameters were";
-        drawMessage($"{diametersChangedCount} {howMany} changed.", ConsoleMessage.Success);
+        drawMessage($"{diametersChangedCount} {howMany} changed.", ConsoleMessageStatus.Success);
     }
 
     private void drawDeleteDuplicatesOptions()
     {
-        string[] paths = askForFilesPaths();
-        double range = askForNumericalInput("__Type range value to delete duplicates within__");
+        string[] paths = InputCollectorAndValidator.AskForFilesPaths(drawMessage);
+        var dxfEditor = new DxfEditor(paths[1], paths[0]);
 
-        (int deletedSplines, int deletedDuplicates) = DxfEditor.DeleteSplinesAndDuplicates(paths[0], paths[1], range);
+        double range = InputCollectorAndValidator.AskForNumericalInput("__Type range value to delete duplicates within__", drawMessage);
+
+        (int deletedSplines, int deletedDuplicates) = dxfEditor.DeleteSplinesAndDuplicates(range);
 
         string howMany = deletedSplines == 1 ? "spline was" : "splines were";
-        drawMessage($"{deletedSplines} {howMany} deleted.", ConsoleMessage.Success);
+        drawMessage($"{deletedSplines} {howMany} deleted.", ConsoleMessageStatus.Success);
 
         howMany = deletedDuplicates == 1 ? "duplicate was" : "duplicates were";
-        drawMessage($"{deletedDuplicates} {howMany} deleted.", ConsoleMessage.Success);
+        drawMessage($"{deletedDuplicates} {howMany} deleted.", ConsoleMessageStatus.Success);
     }
 
-    private char askForOptionInput<T>(IEnumerable<T> options)
+    internal void drawMessage(string message, ConsoleMessageStatus status)
     {
-        bool toStopAskForInput = false;
-        char selectedOption = 'X';
-
-        while (!toStopAskForInput)
-        {
-            Console.WriteLine("__Choose from options bellow__");
-            int counter = 1;
-            foreach (T opt in options)
-                Console.WriteLine($"[{counter++}]:{opt}");
-
-            if (InputCollectorAndValidator.TryGetSelectedOptionInput
-                     (Enumerable.Range(1, options.Count()), out selectedOption)) toStopAskForInput = true;
-            else drawMessage("Invalid option selected!Try once again.", ConsoleMessage.Error);
-        }
-
-        Console.WriteLine();
-        return selectedOption;
-    }
-
-    private string askForTextualInput(string message)
-    {
-        bool toStopAskForInput = false;
-        string input = string.Empty;
-
-        while (!toStopAskForInput)
-        {
-            Console.WriteLine(message);
-            if (InputCollectorAndValidator.TryGetTextualInput(out input, true)) toStopAskForInput = true;
-            else drawMessage("Invalid input!Must not be empty and begin with \"C:\\\"", ConsoleMessage.Error);
-        }
-
-        return input;
-    }
-
-    private double askForNumericalInput(string message, bool largerThanZero = true)
-    {
-        bool toStopAskForInput = false;
-        double input = 0;
-
-        while (!toStopAskForInput)
-        {
-            Console.WriteLine(message);
-            if (InputCollectorAndValidator.TryGetNumericalInput(out input, largerThanZero)) toStopAskForInput = true;
-            else drawMessage("Invalid input!Try once again.", ConsoleMessage.Error);
-        }
-
-        return input;
-    }
-
-    private string[] askForFilesPaths()
-    {
-        string[] paths = new string[2];
-        string[] messages = { "__Type path to target DXF file,relative to root folder __", "__Type path for new DXF file,relative to root folder" };
-
-        for (int i = 0; i < messages.Length; i++)
-            paths[i] = askForTextualInput(messages[i]);
-
-        return paths;
-    }
-
-    internal void drawMessage(string message, ConsoleMessage type)
-    {
-        if (type == ConsoleMessage.Success)
+        if (status == ConsoleMessageStatus.Success)
         {
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.ForegroundColor = ConsoleColor.White;
         }
-        else if (type == ConsoleMessage.Error)
+        else if (status == ConsoleMessageStatus.Error)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.DarkRed;
