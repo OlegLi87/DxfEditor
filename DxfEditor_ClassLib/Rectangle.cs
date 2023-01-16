@@ -8,8 +8,8 @@ public readonly struct Rectangle
         Height = height;
     }
 
-    internal double Width { get; init; }
-    internal double Height { get; init; }
+    internal double Width { get; }
+    internal double Height { get; }
 
     internal bool IsAbleToContain(Rectangle rect) =>
       (Width >= rect.Width && Height >= rect.Height) || (Width >= rect.Height && Height >= rect.Width);
