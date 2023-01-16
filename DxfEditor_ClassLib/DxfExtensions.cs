@@ -5,7 +5,7 @@ namespace DxfEditor_ClassLib;
 
 internal static class DxfExtensions
 {
-    internal static DxfLine GetOffsetLine(this DxfLine line, double offset, InsertionDirection direction)
+    internal static DxfLine GetOffsetLine(this DxfLine line, InsertionDirection direction, double offset)
     {
         DxfPoint p1, p2;
 

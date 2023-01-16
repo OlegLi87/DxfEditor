@@ -65,12 +65,16 @@ internal static class InputCollectorAndValidator
         return input;
     }
 
-    internal static string[] AskForFilesPaths(Action<string, ConsoleMessageStatus> messageDrawer)
+    internal static string[] AskForFilesPaths(Action<string, ConsoleMessageStatus> messageDrawer, bool isNewFile = false)
     {
-        string[] messages = { "__Type path to target DXF file,relative to root folder __", "__Type path for new DXF file,relative to root folder" };
-        string[] paths = new string[messages.Length];
+        var messages = new List<string>();
+        if (!isNewFile)
+            messages.AddRange(new[] { "__Type path to target DXF file,relative to root folder __", "__Type path for new DXF file,relative to root folder" });
+        else messages.Add("__Type path for new DXF file,relative to root folder");
 
-        for (int i = 0; i < messages.Length; i++)
+        string[] paths = new string[messages.Count];
+
+        for (int i = 0; i < messages.Count; i++)
             paths[i] = AskForTextualInput(messages[i], messageDrawer, true);
 
         var regex = new Regex(@".dxf$");

@@ -1,4 +1,5 @@
-﻿using IxMilia.Dxf.Entities;
+﻿using IxMilia.Dxf;
+using IxMilia.Dxf.Entities;
 
 namespace DxfEditor_ClassLib;
 
@@ -69,8 +70,26 @@ public class DxfEditor
         return (deletedSplines, deletedDuplicates);
     }
 
-    public void CreateMesh()
+    public void CreateMeshes(IEnumerable<MeshData> meshDatas)
     {
+        var dxfFile = new DxfFile();
+        var origin = new DxfPoint(0, 0, 0);
 
+        foreach (var meshData in meshDatas)
+        {
+            if (meshData.SheetSize.IsAbleToContain(meshData.ItemSize))
+            {
+                (List<DxfLine> hLines, List<DxfLine> vLines) = DxfUtils.CreateLines(meshData, origin);
+                createMesh(hLines.Concat(vLines), dxfFile);
+            }
+        }
+    }
+
+    private void createMesh(IEnumerable<DxfLine> lines, DxfFile dxfFile)
+    {
+        foreach (var line in lines)
+            dxfFile.Entities.Add(line);
+
+        dxfFile.Save(_pathNew);
     }
 }

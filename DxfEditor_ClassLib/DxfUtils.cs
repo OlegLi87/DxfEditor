@@ -48,6 +48,78 @@ internal static class DxfUtils
              _ => false
          };
 
+    internal static (List<DxfLine> hLines, List<DxfLine> vLines) CreateLines(MeshData meshData, DxfPoint origin)
+    {
+        var horizontalLines = new List<DxfLine>();
+        var verticalLines = new List<DxfLine>();
+
+        // gathering all necessery data to work with
+        (Rectangle sheet, Rectangle item, double overcut, int amount) = meshData;
+
+        InsertionDirection direction = sheet.GetOptimalInsertionDirection(item);
+        double incrementAlongWidth = direction == InsertionDirection.WidthAlongWidth ? item.Width : item.Height;
+        int itemsNumberAlongWidth = (int)(sheet.Width / incrementAlongWidth);
+
+        double incrementAlongHeight = direction == InsertionDirection.HeightAlongWidth ? item.Height : item.Width;
+        int itemsCounter = 0;
+        bool isFirstRoundTrip = true;
+
+        // creating lines along width of the sheet aka X axis
+        while (itemsCounter < amount && (horizontalLines.Count - 1) * incrementAlongHeight <= sheet.Height - incrementAlongHeight)
+        {
+            // building a new line
+            if (isFirstRoundTrip || amount - itemsCounter - itemsNumberAlongWidth < 0)
+            {
+                double lineLength = 0;
+                while (itemsCounter < amount && lineLength <= sheet.Width - incrementAlongWidth)
+                {
+                    lineLength += incrementAlongWidth;
+                    itemsCounter++;
+                }
+                var line = new DxfLine(new DxfPoint(origin.X - overcut, origin.Y, 0), new DxfPoint(origin.X + lineLength + overcut, origin.Y, 0));
+                horizontalLines.Add(line);
+
+                // at once building the second line if first line was just created
+                if (isFirstRoundTrip)
+                {
+                    line = line.GetOffsetLine(InsertionDirection.HeightAlongWidth, incrementAlongHeight);
+                    horizontalLines.Add(line);
+                    isFirstRoundTrip = false;
+                }
+            }
+            // creating a new line by offseting the last horizontal line
+            else
+            {
+                var line = horizontalLines[^1].GetOffsetLine(InsertionDirection.HeightAlongWidth, incrementAlongHeight);
+                horizontalLines.Add(line);
+                itemsCounter += itemsNumberAlongWidth;
+            }
+        }
+
+        // creating vertical lines
+        isFirstRoundTrip = true;
+        var ceilLine = horizontalLines[^1];
+
+        while (verticalLines.Count - 1 < itemsNumberAlongWidth)
+        {
+            DxfLine line;
+            // building a new line
+            if (isFirstRoundTrip || (verticalLines.Count - 1) * incrementAlongWidth <= ceilLine.P2.X - incrementAlongWidth)
+            {
+                if (!isFirstRoundTrip) ceilLine = horizontalLines[^2];
+                else isFirstRoundTrip = false;
+
+                line = new DxfLine(new DxfPoint(origin.X, origin.Y - overcut, 0), new DxfPoint(origin.X, ceilLine.P1.Y + overcut, 0));
+                verticalLines.Add(line);
+            }
+
+            line = verticalLines[^1].GetOffsetLine(InsertionDirection.WidthAlongWidth, incrementAlongWidth);
+            verticalLines.Add(line);
+        }
+
+        return (horizontalLines, verticalLines);
+    }
+
     private static bool arePointsWithinRange(DxfPoint p1, DxfPoint p2, double range) =>
        Math.Abs(p1.X - p2.X) < range && Math.Abs(p1.Y - p2.Y) < range;
 

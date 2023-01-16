@@ -20,7 +20,10 @@ internal class UiDrawer
                 drawOffsetDiametersOption();
                 break;
             case '2':
-                drawDeleteDuplicatesOptions();
+                drawDeleteDuplicatesOption();
+                break;
+            case '3':
+                drawCreateMeshesOption();
                 break;
         }
     }
@@ -53,7 +56,7 @@ internal class UiDrawer
                 offset = InputCollectorAndValidator.AskForNumericalInput("__Type diameter offset size__", drawMessage, false);
                 diameterToOffsetMap.Add(diameter, offset);
 
-                selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(new string[] { "Add more diameters", "Stop adding" }, drawMessage);
+                selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(new[] { "Add more diameters", "Stop adding" }, drawMessage);
             }
             while (selectedOption != '2');
 
@@ -64,7 +67,7 @@ internal class UiDrawer
         drawMessage($"{diametersChangedCount} {howMany} changed.", ConsoleMessageStatus.Success);
     }
 
-    private void drawDeleteDuplicatesOptions()
+    private void drawDeleteDuplicatesOption()
     {
         string[] paths = InputCollectorAndValidator.AskForFilesPaths(drawMessage);
         var dxfEditor = new DxfEditor(paths[1], paths[0]);
@@ -78,6 +81,38 @@ internal class UiDrawer
 
         howMany = deletedDuplicates == 1 ? "duplicate was" : "duplicates were";
         drawMessage($"{deletedDuplicates} {howMany} deleted.", ConsoleMessageStatus.Success);
+    }
+
+    private void drawCreateMeshesOption()
+    {
+        string path = InputCollectorAndValidator.AskForFilesPaths(drawMessage, true)[0];
+        var dxfEditor = new DxfEditor(path);
+        var meshDatas = new List<MeshData>();
+        char selectedOption;
+
+        do
+        {
+            double sheetWidth = InputCollectorAndValidator.AskForNumericalInput("Type in sheet width in millimeters", drawMessage);
+            double sheetHeight = InputCollectorAndValidator.AskForNumericalInput("Type in sheet height in millimeters", drawMessage);
+            double itemWidth = InputCollectorAndValidator.AskForNumericalInput("Type in item width in millimeters", drawMessage);
+            double itemHeight = InputCollectorAndValidator.AskForNumericalInput("Type in item height in millimeters", drawMessage);
+            double overcut = InputCollectorAndValidator.AskForNumericalInput("Type in overcut in millimeters", drawMessage);
+            int amount = (int)(InputCollectorAndValidator.AskForNumericalInput("Type in items amount", drawMessage));
+
+            var meshData = new MeshData
+            {
+                SheetSize = new Rectangle(sheetWidth, sheetHeight),
+                ItemSize = new Rectangle(itemWidth, itemHeight),
+                Overcut = overcut,
+                Amount = amount
+            };
+            meshDatas.Add(meshData);
+
+            selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(new[] { "Add more meshes", "Stop adding" }, drawMessage);
+        }
+        while (selectedOption != '2');
+
+        dxfEditor.CreateMeshes(meshDatas);
     }
 
     internal void drawMessage(string message, ConsoleMessageStatus status)
