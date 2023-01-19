@@ -101,7 +101,7 @@ internal class UiDrawer
 
             var meshData = new MeshData
             {
-                SheetSize = new Rectangle(sheetWidth, sheetHeight),
+                SheetSize = new Rectangle(sheetWidth - overcut * 2, sheetHeight - overcut * 2),
                 ItemSize = new Rectangle(itemWidth, itemHeight),
                 Overcut = overcut,
                 Amount = amount

@@ -10,11 +10,12 @@ public class DxfEditor
 
     public DxfEditor(string pathNew, string? pathOriginal = null)
     {
+        ArgumentNullException.ThrowIfNull(pathNew);
         _pathNew = pathNew;
         _pathOriginal = pathOriginal;
     }
 
-    public int OffsetCirlces(Dictionary<double, double>? offsetMap, bool offsetAll = true, double offsetDiameter = 0)
+    public int OffsetCirlces(Dictionary<double, double>? offsetMap, bool offsetAll = true, double? offsetDiameter = null)
     {
         int diametersChanged = 0;
         var dxfFile = DxfUtils.LoadDxfFile(_pathOriginal);
@@ -27,12 +28,13 @@ public class DxfEditor
 
             if (offsetAll)
             {
-                circle.Radius += offsetDiameter / 2;
+                ArgumentNullException.ThrowIfNull(offsetDiameter);
+                circle.Radius += offsetDiameter.Value / 2;
                 diametersChanged++;
             }
             else
             {
-                if (offsetMap is null) return 0;
+                ArgumentNullException.ThrowIfNull(offsetMap);
 
                 double circleDiameter = Math.Round(circle.Radius * 2, 2);
                 if (offsetMap.ContainsKey(circleDiameter))
@@ -77,10 +79,14 @@ public class DxfEditor
 
         foreach (var meshData in meshDatas)
         {
-            if (meshData.SheetSize.IsAbleToContain(meshData.ItemSize))
+            var currentData = meshData;
+            while (currentData.SheetSize.IsAbleToContain(currentData.ItemSize))
             {
-                (List<DxfLine> hLines, List<DxfLine> vLines) = DxfUtils.CreateLines(meshData, origin);
-                createMesh(hLines.Concat(vLines), dxfFile);
+                (List<DxfLine> hLines, List<DxfLine> vLines) lines = DxfUtils.CreateLines(currentData);
+                createMesh(lines.hLines.Concat(lines.vLines), dxfFile);
+
+                currentData = DxfUtils.CreateAnotherMeshData(currentData, lines);
+                if (currentData is null) break;
             }
         }
     }

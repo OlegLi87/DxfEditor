@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices.ObjectiveC;
 using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
 
@@ -48,19 +50,19 @@ internal static class DxfUtils
              _ => false
          };
 
-    internal static (List<DxfLine> hLines, List<DxfLine> vLines) CreateLines(MeshData meshData, DxfPoint origin)
+    internal static (List<DxfLine> hLines, List<DxfLine> vLines) CreateLines(MeshData meshData)
     {
         var horizontalLines = new List<DxfLine>();
         var verticalLines = new List<DxfLine>();
 
         // gathering all necessery data to work with
-        (Rectangle sheet, Rectangle item, double overcut, int amount) = meshData;
+        (Rectangle sheet, Rectangle item, double overcut, int amount, DxfPoint origin) = meshData;
 
         InsertionDirection direction = sheet.GetOptimalInsertionDirection(item);
         double incrementAlongWidth = direction == InsertionDirection.WidthAlongWidth ? item.Width : item.Height;
         int itemsNumberAlongWidth = (int)(sheet.Width / incrementAlongWidth);
 
-        double incrementAlongHeight = direction == InsertionDirection.HeightAlongWidth ? item.Height : item.Width;
+        double incrementAlongHeight = direction == InsertionDirection.HeightAlongWidth ? item.Width : item.Height;
         int itemsCounter = 0;
         bool isFirstRoundTrip = true;
 
@@ -68,7 +70,7 @@ internal static class DxfUtils
         while (itemsCounter < amount && (horizontalLines.Count - 1) * incrementAlongHeight <= sheet.Height - incrementAlongHeight)
         {
             // building a new line
-            if (isFirstRoundTrip || amount - itemsCounter - itemsNumberAlongWidth < 0)
+            if (isFirstRoundTrip || amount - itemsCounter < itemsNumberAlongWidth)
             {
                 double lineLength = 0;
                 while (itemsCounter < amount && lineLength <= sheet.Width - incrementAlongWidth)
@@ -76,7 +78,10 @@ internal static class DxfUtils
                     lineLength += incrementAlongWidth;
                     itemsCounter++;
                 }
-                var line = new DxfLine(new DxfPoint(origin.X - overcut, origin.Y, 0), new DxfPoint(origin.X + lineLength + overcut, origin.Y, 0));
+                double yPosition = isFirstRoundTrip ? 0 : horizontalLines[^1].P1.Y + incrementAlongHeight;
+                var line = new DxfLine(new DxfPoint(origin.X - overcut, origin.Y + yPosition, 0),
+                                          new DxfPoint(origin.X + lineLength + overcut, origin.Y + yPosition, 0));
+
                 horizontalLines.Add(line);
 
                 // at once building the second line if first line was just created
@@ -103,13 +108,23 @@ internal static class DxfUtils
         while (verticalLines.Count - 1 < itemsNumberAlongWidth)
         {
             DxfLine line;
-            // building a new line
-            if (isFirstRoundTrip || (verticalLines.Count - 1) * incrementAlongWidth <= ceilLine.P2.X - incrementAlongWidth)
-            {
-                if (!isFirstRoundTrip) ceilLine = horizontalLines[^2];
-                else isFirstRoundTrip = false;
 
-                line = new DxfLine(new DxfPoint(origin.X, origin.Y - overcut, 0), new DxfPoint(origin.X, ceilLine.P1.Y + overcut, 0));
+            // building a new line
+            if (isFirstRoundTrip || verticalLines.Count * incrementAlongWidth > ceilLine.P2.X - origin.X - overcut)
+            {
+                if (isFirstRoundTrip)
+                {
+                    line = new DxfLine(new DxfPoint(origin.X, origin.Y - overcut, 0), new DxfPoint(origin.X, ceilLine.P1.Y + overcut, 0));
+                    isFirstRoundTrip = false;
+                }
+                else
+                {
+                    ceilLine = horizontalLines[^2];
+                    var lastVerLine = verticalLines[^1];
+                    line = new DxfLine(new DxfPoint(lastVerLine.P2.X + incrementAlongWidth, origin.Y - overcut, 0),
+                            new DxfPoint(lastVerLine.P2.X + incrementAlongWidth, ceilLine.P2.Y + overcut, 0));
+                }
+
                 verticalLines.Add(line);
             }
 
@@ -118,6 +133,50 @@ internal static class DxfUtils
         }
 
         return (horizontalLines, verticalLines);
+    }
+
+    internal static MeshData? CreateAnotherMeshData(MeshData meshData, (List<DxfLine> hLines, List<DxfLine> vLines) createdLines)
+    {
+        int offset = 1; // constant offset for a new mesh
+        (Rectangle sheet, Rectangle item, double overcut, int amount, DxfPoint origin) = meshData;
+
+        int amountToComplete = amount - ((createdLines.hLines.Count - 1) * (createdLines.vLines.Count - 1));
+        if (amountToComplete <= 0) return null;
+
+        double maxX = createdLines.hLines.Max(l => l.P2.X);
+        double maxY = createdLines.vLines.Max(l => l.P2.Y);
+
+        // checking along X axis
+        double widthSize = sheet.Width - (maxX - origin.X) - overcut - offset;
+        double heightSize = sheet.Height;
+        var newSheet = new Rectangle(widthSize, heightSize);
+
+        if (newSheet.IsAbleToContain(item))
+            return new MeshData
+            {
+                SheetSize = newSheet,
+                ItemSize = item,
+                Overcut = overcut,
+                Amount = amountToComplete,
+                Origin = new DxfPoint(maxX + offset + overcut, origin.Y, 0)
+            };
+
+        // checking along Y axis
+        widthSize = sheet.Width;
+        heightSize = sheet.Height - (maxY - origin.Y) - overcut - offset;
+        newSheet = new Rectangle(widthSize, heightSize);
+
+        if (newSheet.IsAbleToContain(item))
+            return new MeshData
+            {
+                SheetSize = newSheet,
+                ItemSize = item,
+                Overcut = overcut,
+                Amount = amountToComplete,
+                Origin = new DxfPoint(origin.X, maxY + overcut + offset, 0)
+            };
+
+        return null;
     }
 
     private static bool arePointsWithinRange(DxfPoint p1, DxfPoint p2, double range) =>
