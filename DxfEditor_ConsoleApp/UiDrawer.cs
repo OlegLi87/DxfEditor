@@ -92,12 +92,12 @@ internal class UiDrawer
 
         do
         {
-            double sheetWidth = InputCollectorAndValidator.AskForNumericalInput("Type in sheet width in millimeters", drawMessage);
-            double sheetHeight = InputCollectorAndValidator.AskForNumericalInput("Type in sheet height in millimeters", drawMessage);
-            double itemWidth = InputCollectorAndValidator.AskForNumericalInput("Type in item width in millimeters", drawMessage);
-            double itemHeight = InputCollectorAndValidator.AskForNumericalInput("Type in item height in millimeters", drawMessage);
-            double overcut = InputCollectorAndValidator.AskForNumericalInput("Type in overcut in millimeters", drawMessage);
-            int amount = (int)(InputCollectorAndValidator.AskForNumericalInput("Type in items amount", drawMessage));
+            double sheetWidth = InputCollectorAndValidator.AskForNumericalInput("__Type sheet width in millimeters__", drawMessage);
+            double sheetHeight = InputCollectorAndValidator.AskForNumericalInput("__Type sheet height in millimeters__", drawMessage);
+            double itemWidth = InputCollectorAndValidator.AskForNumericalInput("__Type item width in millimeters__", drawMessage);
+            double itemHeight = InputCollectorAndValidator.AskForNumericalInput("__Type item height in millimeters__", drawMessage);
+            double overcut = InputCollectorAndValidator.AskForNumericalInput("__Type overcut in millimeters__", drawMessage);
+            int amount = (int)(InputCollectorAndValidator.AskForNumericalInput("__Type items amount__", drawMessage));
 
             var meshData = new MeshData
             {

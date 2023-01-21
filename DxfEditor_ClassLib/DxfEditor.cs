@@ -1,4 +1,5 @@
-﻿using IxMilia.Dxf;
+﻿using System.Data;
+using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
 
 namespace DxfEditor_ClassLib;
@@ -20,7 +21,7 @@ public class DxfEditor
         int diametersChanged = 0;
         var dxfFile = DxfUtils.LoadDxfFile(_pathOriginal);
 
-        var circles = dxfFile.Entities.Where(e => e is DxfCircle && e is not DxfArc).Cast<DxfCircle>();
+        var circles = dxfFile.Entities.Where(e => e.GetType() == typeof(DxfCircle)).Cast<DxfCircle>();
         if (circles is null) return 0;
 
         foreach (var circle in circles)
@@ -76,23 +77,40 @@ public class DxfEditor
     {
         var dxfFile = new DxfFile();
         var origin = new DxfPoint(0, 0, 0);
+        int offsetBetweenMeshes = 50;
 
         foreach (var meshData in meshDatas)
         {
-            var currentData = meshData;
-            while (currentData.SheetSize.IsAbleToContain(currentData.ItemSize))
+            if (meshData.SheetSize.IsAbleToContain(meshData.ItemSize) && meshData.Amount > 0)
             {
-                (List<DxfLine> hLines, List<DxfLine> vLines) lines = DxfUtils.CreateLines(currentData);
-                createMesh(lines.hLines.Concat(lines.vLines), dxfFile);
+                (IEnumerable<DxfLine> hLines, IEnumerable<DxfLine> vLines) lines;
 
-                currentData = DxfUtils.CreateAnotherMeshData(currentData, lines);
-                if (currentData is null) break;
+                meshData.Origin = origin;
+                DxfUtils.PopulateWithLines(meshData);
+
+                var additionalMeshData = DxfUtils.CreateAnotherMeshData(meshData);
+                if (additionalMeshData is not null)
+                {
+                    DxfUtils.PopulateWithLines(additionalMeshData);
+                    lines = meshData + additionalMeshData;
+                }
+                else lines = (meshData.HorizontalLines, meshData.VerticalLines);
+
+                string text = meshData.ItemSize.Width + " X " + meshData.ItemSize.Height;
+                createMesh(lines.hLines.Concat(lines.vLines), text, dxfFile);
+                origin = new DxfPoint(lines.hLines.Max(l => l.P2.X) + offsetBetweenMeshes, 0, 0);
             }
         }
     }
 
-    private void createMesh(IEnumerable<DxfLine> lines, DxfFile dxfFile)
+    private void createMesh(IEnumerable<DxfLine> lines, string sizeText, DxfFile dxfFile)
     {
+        double maxY = lines.Max(l => l.P2.Y);
+        double minX = lines.Min(l => l.P2.X);
+        var text = new DxfText(new DxfPoint(minX, maxY + 10, 0), 15, sizeText);
+
+        dxfFile.Entities.Add(text);
+
         foreach (var line in lines)
             dxfFile.Entities.Add(line);
 

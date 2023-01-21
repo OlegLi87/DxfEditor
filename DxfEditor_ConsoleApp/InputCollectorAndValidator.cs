@@ -69,8 +69,8 @@ internal static class InputCollectorAndValidator
     {
         var messages = new List<string>();
         if (!isNewFile)
-            messages.AddRange(new[] { "__Type path to target DXF file,relative to root folder __", "__Type path for new DXF file,relative to root folder" });
-        else messages.Add("__Type path for new DXF file,relative to root folder");
+            messages.AddRange(new[] { "__Type path to target DXF file,relative to root folder __", "__Type path for new DXF file,relative to root folder__" });
+        else messages.Add("__Type path for new DXF file,relative to root folder__");
 
         string[] paths = new string[messages.Count];
 

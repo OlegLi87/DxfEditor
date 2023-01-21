@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net.WebSockets;
 using System.Runtime.InteropServices.ObjectiveC;
 using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
@@ -50,7 +51,7 @@ internal static class DxfUtils
              _ => false
          };
 
-    internal static (List<DxfLine> hLines, List<DxfLine> vLines) CreateLines(MeshData meshData)
+    internal static void PopulateWithLines(MeshData meshData)
     {
         var horizontalLines = new List<DxfLine>();
         var verticalLines = new List<DxfLine>();
@@ -132,19 +133,21 @@ internal static class DxfUtils
             verticalLines.Add(line);
         }
 
-        return (horizontalLines, verticalLines);
+        meshData.HorizontalLines.AddRange(horizontalLines);
+        meshData.VerticalLines.AddRange(verticalLines);
     }
 
-    internal static MeshData? CreateAnotherMeshData(MeshData meshData, (List<DxfLine> hLines, List<DxfLine> vLines) createdLines)
+    internal static MeshData? CreateAnotherMeshData(MeshData meshData)
     {
         int offset = 1; // constant offset for a new mesh
         (Rectangle sheet, Rectangle item, double overcut, int amount, DxfPoint origin) = meshData;
+        (List<DxfLine> hLines, List<DxfLine> vLines) = meshData;
 
-        int amountToComplete = amount - ((createdLines.hLines.Count - 1) * (createdLines.vLines.Count - 1));
+        int amountToComplete = amount - ((hLines.Count - 1) * (vLines.Count - 1));
         if (amountToComplete <= 0) return null;
 
-        double maxX = createdLines.hLines.Max(l => l.P2.X);
-        double maxY = createdLines.vLines.Max(l => l.P2.Y);
+        double maxX = hLines.Max(l => l.P2.X);
+        double maxY = vLines.Max(l => l.P2.Y);
 
         // checking along X axis
         double widthSize = sheet.Width - (maxX - origin.X) - overcut - offset;
