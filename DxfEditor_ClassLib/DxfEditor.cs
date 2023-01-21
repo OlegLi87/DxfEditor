@@ -20,7 +20,7 @@ public class DxfEditor
         int diametersChanged = 0;
         var dxfFile = DxfUtils.LoadDxfFile(_pathOriginal);
 
-        var circles = dxfFile.Entities.OfType<DxfCircle>();
+        var circles = dxfFile.Entities.Where(e => e is DxfCircle && e is not DxfArc).Cast<DxfCircle>();
         if (circles is null) return 0;
 
         foreach (var circle in circles)
