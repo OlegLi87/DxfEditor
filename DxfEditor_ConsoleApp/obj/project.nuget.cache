@@ -1,12 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "tZrqXCbGRGRbzGNhJRgBv+i332wJDweQK3gGL01tTZSst3qJ3UH2I/W1WJOqveZka/PVHo857h14mP3G7z9k1g==",
+  "dgSpecHash": "yRXOsT2F+TeYdFM8IcGUFyekg4WvSXAJeV9qbgXPE5z47T3l01qtTPaBu8rmtDCqi6hF/Qs3sFAUxrW9iqeMeQ==",
   "success": true,
   "projectFilePath": "C:\\Programming\\Final Projects\\DxfEditor\\DxfEditor_ConsoleApp\\DxfEditor_ConsoleApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\hp\\.nuget\\packages\\ixmilia.dxf\\0.8.3\\ixmilia.dxf.0.8.3.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
-    "C:\\Users\\hp\\.nuget\\packages\\system.text.encoding.codepages\\5.0.0\\system.text.encoding.codepages.5.0.0.nupkg.sha512"
+    "C:\\Users\\hp\\.nuget\\packages\\system.text.encoding.codepages\\5.0.0\\system.text.encoding.codepages.5.0.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\6.0.11\\microsoft.netcore.app.runtime.win-x64.6.0.11.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\6.0.11\\microsoft.windowsdesktop.app.runtime.win-x64.6.0.11.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\6.0.11\\microsoft.aspnetcore.app.runtime.win-x64.6.0.11.nupkg.sha512"
   ],
   "logs": []
 }

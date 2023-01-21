@@ -69,7 +69,7 @@ public class DxfEditor
             }
         }
 
-        dxfFile.Save(_pathNew);
+        if (deletedSplines > 0 || deletedDuplicates > 0) dxfFile.Save(_pathNew);
         return (deletedSplines, deletedDuplicates);
     }
 

@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using DxfEditor_ClassLib;
 
 namespace DxfEditor_ConsoleApp;
