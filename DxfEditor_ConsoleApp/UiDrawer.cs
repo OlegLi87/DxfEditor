@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using DxfEditor_ClassLib;
 
 namespace DxfEditor_ConsoleApp;
@@ -23,8 +24,13 @@ internal class UiDrawer
 
     private void drawLogo()
     {
-        foreach (string line in UiConstants.Logo)
-            Console.WriteLine(line);
+        for (int i = 0; i < UiConstants.Logo.Length; i++)
+        {
+            if (i == UiConstants.Logo.Length - 1) Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(UiConstants.Logo[i]);
+        }
+
+        setColors();
     }
 
     private void drawMenu()
@@ -113,7 +119,7 @@ internal class UiDrawer
             double sheetHeight = InputCollectorAndValidator.AskForNumericalInput("__Type sheet height in millimeters__", drawMessage);
             double itemWidth = InputCollectorAndValidator.AskForNumericalInput("__Type item width in millimeters__", drawMessage);
             double itemHeight = InputCollectorAndValidator.AskForNumericalInput("__Type item height in millimeters__", drawMessage);
-            double overcut = InputCollectorAndValidator.AskForNumericalInput("__Type overcut in millimeters__", drawMessage);
+            double overcut = InputCollectorAndValidator.AskForNumericalInput("__Type overcut in millimeters__", drawMessage, false);
             int amount = (int)(InputCollectorAndValidator.AskForNumericalInput("__Type items amount__", drawMessage));
 
             var meshData = new MeshData
