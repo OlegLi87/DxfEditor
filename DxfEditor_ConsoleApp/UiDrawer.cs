@@ -6,8 +6,25 @@ internal class UiDrawer
 {
     public void StartUi()
     {
-        Console.Clear();
+        Console.SetWindowSize(UiConstants.Logo[0].Length, UiConstants.CONSOLE_HEIGHT);
+        setColors(true);
+
+        drawLogo();
         drawMenu();
+    }
+
+    private void setColors(bool toClear = false)
+    {
+        Console.BackgroundColor = ConsoleColor.DarkBlue;
+        if (toClear) Console.Clear();
+
+        Console.ForegroundColor = ConsoleColor.White;
+    }
+
+    private void drawLogo()
+    {
+        foreach (string line in UiConstants.Logo)
+            Console.WriteLine(line);
     }
 
     private void drawMenu()
@@ -119,8 +136,8 @@ internal class UiDrawer
     {
         if (status == ConsoleMessageStatus.Success)
         {
-            Console.BackgroundColor = ConsoleColor.Blue;
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
         }
         else if (status == ConsoleMessageStatus.Error)
         {
@@ -128,9 +145,10 @@ internal class UiDrawer
             Console.BackgroundColor = ConsoleColor.DarkRed;
         }
 
-        Console.WriteLine(message);
+        Console.WriteLine();
+        Console.WriteLine(" " + message);
         Console.WriteLine();
 
-        Console.ResetColor();
+        setColors();
     }
 }

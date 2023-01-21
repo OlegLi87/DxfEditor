@@ -12,12 +12,13 @@ internal static class InputCollectorAndValidator
         bool toStopAskForInput = false;
         char selectedOption = 'X';
 
+        Console.WriteLine();
         while (!toStopAskForInput)
         {
-            Console.WriteLine("__Choose from options bellow__");
+            Console.WriteLine(" __Choose from options bellow__");
             int counter = 1;
             foreach (T opt in options)
-                Console.WriteLine($"[{counter++}]:{opt}");
+                Console.WriteLine($" [{counter++}]:{opt}");
 
             if (tryGetSelectedOptionInput(Enumerable.Range(1, options.Count()), out selectedOption)) toStopAskForInput = true;
             else messageDrawer("Invalid option selected!Try once again.", ConsoleMessageStatus.Error);
@@ -33,9 +34,10 @@ internal static class InputCollectorAndValidator
         bool toStopAskForInput = false;
         string input = string.Empty;
 
+        Console.WriteLine();
         while (!toStopAskForInput)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(" " + message);
             if (tryGetTextualInput(out input, checkForPath)) toStopAskForInput = true;
             else
             {
@@ -55,9 +57,10 @@ internal static class InputCollectorAndValidator
         bool toStopAskForInput = false;
         double input = 0;
 
+        Console.WriteLine();
         while (!toStopAskForInput)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(" " + message);
             if (tryGetNumericalInput(out input, largerThanZero)) toStopAskForInput = true;
             else messageDrawer("Invalid input!Try once again.", ConsoleMessageStatus.Error);
         }

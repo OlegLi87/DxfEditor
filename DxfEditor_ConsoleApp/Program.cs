@@ -19,11 +19,15 @@ while (toContinue)
     {
         uiDrawer.drawMessage(ex.Message, ConsoleMessageStatus.Error);
         Trace.WriteLine(DateTime.Now.ToString("dd/M/yy H:mm") + " : " + ex.ToString());
+        Trace.Flush();
     }
 
-    Console.WriteLine("Press \"y\" to repeat from the main menu.");
+    Console.WriteLine("Press \"y\" to reapeat from the main menu.");
     toContinue = Console.ReadKey().KeyChar == 'y';
 }
+
+Trace.Close();
+
 
 
 
