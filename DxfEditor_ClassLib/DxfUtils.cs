@@ -1,6 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Net.WebSockets;
-using System.Runtime.InteropServices.ObjectiveC;
 using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
 

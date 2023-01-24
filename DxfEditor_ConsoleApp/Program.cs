@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using DxfEditor_ConsoleApp;
 
-string path = Path.Combine(Environment.CurrentDirectory, @"exceptionLogs.txt");
+string path = Path.Combine(Environment.CurrentDirectory, "exceptionLogs.txt");
 using var streamWriter = new StreamWriter(path, true);
 
 Trace.Listeners.Add(new TextWriterTraceListener(streamWriter));
@@ -19,6 +19,7 @@ while (toContinue)
     {
         uiDrawer.drawMessage(ex.Message, ConsoleMessageStatus.Error);
         Trace.WriteLine(DateTime.Now.ToString("dd/M/yy H:mm") + " : " + ex.ToString());
+        Trace.WriteLine(String.Empty);
         Trace.Flush();
     }
 

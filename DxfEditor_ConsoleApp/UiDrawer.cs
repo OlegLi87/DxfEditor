@@ -23,6 +23,8 @@ internal class UiDrawer
 
     private void drawLogo()
     {
+        Console.Clear();
+
         for (int i = 0; i < UiConstants.Logo.Length; i++)
         {
             if (i == UiConstants.Logo.Length - 1) Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -35,6 +37,7 @@ internal class UiDrawer
     private void drawMenu()
     {
         char selectedOption = InputCollectorAndValidator.AskForOptionInput<MenuOptions>(Enum.GetValues<MenuOptions>(), drawMessage);
+        drawLogo();
 
         switch (selectedOption)
         {
@@ -59,6 +62,7 @@ internal class UiDrawer
         // Asking for user to choose which diameters to offset
         string[] options = { "Offset all diameters", "Choose separately which diameters to offset" };
         char selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(options, drawMessage);
+        drawLogo();
         double offset;
 
         //draw ui based on which option was selected
@@ -79,6 +83,7 @@ internal class UiDrawer
                 diameterToOffsetMap.Add(diameter, offset);
 
                 selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(new[] { "Add more diameters", "Stop adding" }, drawMessage);
+                drawLogo();
             }
             while (selectedOption != '2');
 
@@ -131,6 +136,7 @@ internal class UiDrawer
             meshDatas.Add(meshData);
 
             selectedOption = InputCollectorAndValidator.AskForOptionInput<string>(new[] { "Add more meshes", "Stop adding" }, drawMessage);
+            drawLogo();
         }
         while (selectedOption != '2');
 
