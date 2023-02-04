@@ -108,7 +108,7 @@ internal static class DxfUtils
             DxfLine line;
 
             // building a new line
-            if (isFirstRoundTrip || verticalLines.Count * incrementAlongWidth > ceilLine.P2.X - origin.X - overcut)
+            if (isFirstRoundTrip || verticalLines.Count * incrementAlongWidth + origin.X > ceilLine.P2.X - overcut)
             {
                 if (isFirstRoundTrip)
                 {
